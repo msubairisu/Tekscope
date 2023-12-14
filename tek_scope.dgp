@@ -1,0 +1,44 @@
+import numpy as np
+from dataguzzler_python import dgpy
+
+include(dgpy,"dgpy_startup.dpi") # If you get a NameError here, be sure you are executing this file with dataguzzler-python
+
+class tekscope(metaclass=dgpy.Module):
+    inst=None#pyvisa connection to the instrument
+    
+    def __init__(self,module_name,visa_addr):  
+        self.inst=include(dgpy,"visa.dpi",visa_addr=visa_addr)
+        self.inst.write("HEAD ON")#Turn on header mode for WFMINPRE 
+        pass
+    def download_waveform(self):
+        WFMI=self.inst.query("WFMI?")
+        WFMI_list=WFMI.split(";")
+        WFMI_list[0]=WFMI_list[0].split(":")[-1]
+        Params={WFMI_entry.split(" ")[0]:WFMI_entry.split(" ")[1].strip() for WFMI_entry in WFMI_list} 
+        if  Params["BYT_NR"]=="1":
+            BytNr="b"
+        elif Params["BYT_NR"]=="2":
+            BytNr="h"
+        pass
+        if Params["BYT_OR"]=="MSB":
+            big_endian=True
+        elif Params["BYT_OR"]=="LSB":
+            big_endian=False
+        else:
+            raise ValueError(f"unknown BYT_OR: {Params['BYT_OR']:s}")
+        pass
+        print(Params)
+        return (self.inst.query_binary_values('CURV?', datatype=BytNr, is_big_endian=big_endian,container=np.ndarray))   
+        
+        
+    
+    
+tek=tekscope("tek",visa_addr='USB0::0x0699::0x0401::C010126::INSTR')
+
+
+
+print("dataguzzler-python subprocess gpib demo")
+print("------------------------------------------")
+print("You can query the instrument with: tek.inst.query(\"*IDN?\")")
+
+WFM=tek.download_waveform()
