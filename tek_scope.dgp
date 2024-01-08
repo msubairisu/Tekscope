@@ -17,8 +17,8 @@ class tekscope(metaclass=dgpy.Module):
         self.inst=include(dgpy,"visa.dpi",visa_addr=visa_addr)
         self.inst.write("HEAD ON")#Turn on header mode for WFMINPRE 
         pass
-    def download_waveform(self):
-    
+    def download_waveform(self,channel="CH1"):
+        self.inst.write(f"DATA:SOURCE {channel:s}")
         WFMI=self.inst.query("WFMPRE?")
         WFMI_list=WFMI.split(";")
         WFMI_list[0]=WFMI_list[0].split(":")[-1]
@@ -42,13 +42,13 @@ class tekscope(metaclass=dgpy.Module):
     
 #tek=tekscope("tek",visa_addr=None)    
 
-#tek=tekscope("tek",visa_addr='USB0::0x0699::0x0401::C010126::INSTR') # Tektronics DPO4032
+tek=tekscope("tek",visa_addr='USB0::0x0699::0x0401::C010126::INSTR') # Tektronics DPO4032
 
-tek=tekscope("tek",visa_addr='USB0::0x0699::0x036A::C046216::INSTR') # Tektronics TDS2024B
+#tek=tekscope("tek",visa_addr='USB0::0x0699::0x036A::C046216::INSTR') # Tektronics TDS2024B
 
 
 print("dataguzzler-python subprocess gpib demo")
 print("------------------------------------------")
 print("You can query the instrument with: tek.inst.query(\"*IDN?\")")
 
-WFM=tek.download_waveform()
+WFM=tek.download_waveform("CH1")
