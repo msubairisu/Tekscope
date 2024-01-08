@@ -1,17 +1,25 @@
 import numpy as np
 from dataguzzler_python import dgpy
+import spatialnde2 as snde
 
 include(dgpy,"dgpy_startup.dpi") # If you get a NameError here, be sure you are executing this file with dataguzzler-python
+
+include(dgpy,"Qt.dpi",prefer_pyqt=False)
+#include(snde,"recdb_gui.dpi")
+
+include(dgpy,"matplotlib.dpi")
 
 class tekscope(metaclass=dgpy.Module):
     inst=None#pyvisa connection to the instrument
     
     def __init__(self,module_name,visa_addr):  
+       
         self.inst=include(dgpy,"visa.dpi",visa_addr=visa_addr)
         self.inst.write("HEAD ON")#Turn on header mode for WFMINPRE 
         pass
     def download_waveform(self):
-        WFMI=self.inst.query("WFMI?")
+    
+        WFMI=self.inst.query("WFMPRE?")
         WFMI_list=WFMI.split(";")
         WFMI_list[0]=WFMI_list[0].split(":")[-1]
         Params={WFMI_entry.split(" ")[0]:WFMI_entry.split(" ")[1].strip() for WFMI_entry in WFMI_list} 
@@ -33,7 +41,7 @@ class tekscope(metaclass=dgpy.Module):
         
     
     
-tek=tekscope("tek",visa_addr='USB0::0x0699::0x0401::C010126::INSTR')
+tek=tekscope("tek",visa_addr=None)
 
 
 
