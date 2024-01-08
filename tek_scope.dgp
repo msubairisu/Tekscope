@@ -30,11 +30,12 @@ class tekscope(metaclass=dgpy.Module):
         print(Params)
         return (self.inst.query_binary_values('CURV?', datatype=BytNr, is_big_endian=big_endian,container=np.ndarray))   
         
-        
+#include(dgpy,'visa.dpi')#Lisiting the devices        
     
     
-tek=tekscope("tek",visa_addr='USB0::0x0699::0x0401::C010126::INSTR')
+#tek=tekscope("tek",visa_addr='USB0::0x0699::0x0401::C010126::INSTR') # Tektronics DPO4032
 
+tek=tekscope("tek",visa_addr='USB0::0x0699::0x036A::C046216::INSTR') # Tektronics TDS2024B
 
 
 print("dataguzzler-python subprocess gpib demo")
